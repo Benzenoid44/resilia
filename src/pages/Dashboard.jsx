@@ -3,10 +3,9 @@ import { RefreshCw, Heart } from 'lucide-react';
 import { HEALTH_PARAMS } from '../data/healthConfig';
 import { useLiveData } from '../hooks/useLiveData';
 import HealthCard from '../components/HealthCard';
-import StressAnalysisPanel from '../components/StressAnalysisPanel';
 
 export default function Dashboard() {
-    const { liveData, getOverallRisk, getWellnessScore, getStressAnalysis } = useLiveData();
+    const { liveData, getOverallRisk, getWellnessScore } = useLiveData();
     const overallRisk = getOverallRisk();
     const wellnessScore = getWellnessScore();
 
@@ -122,9 +121,6 @@ export default function Dashboard() {
                     </div>
                 )}
             </div>
-
-            {/* Stress Analysis Panel */}
-            <StressAnalysisPanel getStressAnalysis={getStressAnalysis} />
 
             {/* Cards Grid */}
             <div style={{ padding: '0 14px' }}>

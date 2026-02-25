@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { Activity, Bell, User } from 'lucide-react';
+import { Activity, Bell, User, FlaskConical } from 'lucide-react';
 import Dashboard from '../pages/Dashboard';
 import AlertsPage from '../pages/AlertsPage';
 import ProfilePage from '../pages/ProfilePage';
+import DemoPage from '../pages/DemoPage';
 
 const navItems = [
     { id: 'dashboard', icon: Activity, label: 'Dashboard' },
     { id: 'alerts', icon: Bell, label: 'Alerts' },
+    { id: 'demo', icon: FlaskConical, label: 'Demo' },
     { id: 'profile', icon: User, label: 'Profile' },
 ];
 
@@ -26,6 +28,7 @@ export default function AppShell({ deviceConnected = true, user = null }) {
         switch (activeTab) {
             case 'dashboard': return <Dashboard onAlertCountChange={setAlertCount} />;
             case 'alerts': return <AlertsPage />;
+            case 'demo': return <DemoPage />;
             case 'profile': return <ProfilePage user={user} />;
             default: return null;
         }
@@ -79,11 +82,12 @@ export default function AppShell({ deviceConnected = true, user = null }) {
                     background: '#FFFFFF',
                     borderBottom: '1px solid var(--border)',
                     flexShrink: 0,
-                    padding: '0 8px',
+                    padding: '0 4px',
                 }}>
                     {navItems.map(({ id, icon: Icon, label }) => {
                         const isActive = activeTab === id;
                         const showBadge = id === 'alerts' && alertCount > 0;
+                        const isDemo = id === 'demo';
                         return (
                             <button
                                 key={id}
@@ -95,14 +99,16 @@ export default function AppShell({ deviceConnected = true, user = null }) {
                                     padding: '10px 4px 8px',
                                     background: 'none', border: 'none', cursor: 'pointer',
                                     position: 'relative',
-                                    borderBottom: isActive ? '2.5px solid var(--blue)' : '2.5px solid transparent',
+                                    borderBottom: isActive
+                                        ? `2.5px solid ${isDemo ? '#6D4ADE' : 'var(--blue)'}`
+                                        : '2.5px solid transparent',
                                     transition: 'all 0.2s ease',
                                 }}
                             >
                                 <div style={{ position: 'relative' }}>
                                     <Icon
                                         size={19}
-                                        color={isActive ? 'var(--blue)' : 'var(--text-muted)'}
+                                        color={isActive ? (isDemo ? '#6D4ADE' : 'var(--blue)') : 'var(--text-muted)'}
                                         strokeWidth={isActive ? 2.2 : 1.7}
                                     />
                                     {showBadge && (
@@ -118,7 +124,7 @@ export default function AppShell({ deviceConnected = true, user = null }) {
                                 <span style={{
                                     fontSize: '0.6rem',
                                     fontWeight: isActive ? 700 : 400,
-                                    color: isActive ? 'var(--blue)' : 'var(--text-muted)',
+                                    color: isActive ? (isDemo ? '#6D4ADE' : 'var(--blue)') : 'var(--text-muted)',
                                     letterSpacing: '0.02em',
                                     textTransform: 'uppercase',
                                 }}>
