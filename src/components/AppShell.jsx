@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Activity, BarChart2, Bell, User } from 'lucide-react';
+import { Activity, Bell, User } from 'lucide-react';
 import Dashboard from '../pages/Dashboard';
 import AlertsPage from '../pages/AlertsPage';
 import ProfilePage from '../pages/ProfilePage';
 
 const navItems = [
     { id: 'dashboard', icon: Activity, label: 'Dashboard' },
-    { id: 'analytics', icon: BarChart2, label: 'Analytics' },
     { id: 'alerts', icon: Bell, label: 'Alerts' },
     { id: 'profile', icon: User, label: 'Profile' },
 ];
@@ -16,7 +15,6 @@ export default function AppShell({ deviceConnected = true, user = null }) {
     const [alertCount, setAlertCount] = useState(0);
     const [time, setTime] = useState(new Date());
 
-    // Tick clock every 30 s
     useEffect(() => {
         const id = setInterval(() => setTime(new Date()), 30000);
         return () => clearInterval(id);
@@ -29,11 +27,7 @@ export default function AppShell({ deviceConnected = true, user = null }) {
             case 'dashboard': return <Dashboard onAlertCountChange={setAlertCount} />;
             case 'alerts': return <AlertsPage />;
             case 'profile': return <ProfilePage user={user} />;
-            default: return (
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: 'var(--text-muted)' }}>
-                    Coming soon
-                </div>
-            );
+            default: return null;
         }
     };
 
@@ -46,7 +40,7 @@ export default function AppShell({ deviceConnected = true, user = null }) {
                 position: 'relative', overflow: 'hidden',
                 boxShadow: '0 0 60px rgba(0,0,0,0.12)',
             }}>
-                {/* Status Bar */}
+                {/* ── Top Status Bar ── */}
                 <div style={{
                     display: 'flex', justifyContent: 'space-between', alignItems: 'center',
                     padding: '10px 20px 6px',
@@ -79,40 +73,38 @@ export default function AppShell({ deviceConnected = true, user = null }) {
                     </div>
                 </div>
 
-                {/* Page content */}
-                <div style={{ flex: 1, overflowY: 'auto', overflowX: 'hidden' }}>
-                    {renderPage()}
-                </div>
-
-                {/* Bottom Nav */}
+                {/* ── Top Navigation Tab Bar ── */}
                 <div style={{
-                    display: 'flex', justifyContent: 'space-around', alignItems: 'center',
-                    padding: '10px 8px 16px',
+                    display: 'flex',
                     background: '#FFFFFF',
-                    borderTop: '1px solid var(--border)',
+                    borderBottom: '1px solid var(--border)',
                     flexShrink: 0,
+                    padding: '0 8px',
                 }}>
                     {navItems.map(({ id, icon: Icon, label }) => {
                         const isActive = activeTab === id;
                         const showBadge = id === 'alerts' && alertCount > 0;
                         return (
-                            <button key={id} onClick={() => setActiveTab(id)} style={{
-                                display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '3px',
-                                background: isActive ? 'rgba(37,99,235,0.07)' : 'none',
-                                border: 'none', cursor: 'pointer',
-                                padding: '6px 18px', borderRadius: '12px',
-                                transition: 'all 0.2s ease', position: 'relative',
-                            }}>
-                                {isActive && (
-                                    <div style={{
-                                        position: 'absolute', top: '-10px', left: '50%',
-                                        transform: 'translateX(-50%)',
-                                        width: '28px', height: '2.5px',
-                                        background: 'var(--blue)', borderRadius: '0 0 3px 3px',
-                                    }} />
-                                )}
+                            <button
+                                key={id}
+                                onClick={() => setActiveTab(id)}
+                                style={{
+                                    flex: 1,
+                                    display: 'flex', flexDirection: 'column', alignItems: 'center',
+                                    justifyContent: 'center', gap: '3px',
+                                    padding: '10px 4px 8px',
+                                    background: 'none', border: 'none', cursor: 'pointer',
+                                    position: 'relative',
+                                    borderBottom: isActive ? '2.5px solid var(--blue)' : '2.5px solid transparent',
+                                    transition: 'all 0.2s ease',
+                                }}
+                            >
                                 <div style={{ position: 'relative' }}>
-                                    <Icon size={20} color={isActive ? 'var(--blue)' : 'var(--text-muted)'} strokeWidth={isActive ? 2.2 : 1.7} />
+                                    <Icon
+                                        size={19}
+                                        color={isActive ? 'var(--blue)' : 'var(--text-muted)'}
+                                        strokeWidth={isActive ? 2.2 : 1.7}
+                                    />
                                     {showBadge && (
                                         <div style={{
                                             position: 'absolute', top: '-4px', right: '-5px',
@@ -123,12 +115,23 @@ export default function AppShell({ deviceConnected = true, user = null }) {
                                         </div>
                                     )}
                                 </div>
-                                <span style={{ fontSize: '0.6rem', fontWeight: isActive ? 700 : 400, color: isActive ? 'var(--blue)' : 'var(--text-muted)', letterSpacing: '0.02em', textTransform: 'uppercase' }}>
+                                <span style={{
+                                    fontSize: '0.6rem',
+                                    fontWeight: isActive ? 700 : 400,
+                                    color: isActive ? 'var(--blue)' : 'var(--text-muted)',
+                                    letterSpacing: '0.02em',
+                                    textTransform: 'uppercase',
+                                }}>
                                     {label}
                                 </span>
                             </button>
                         );
                     })}
+                </div>
+
+                {/* ── Page content ── */}
+                <div style={{ flex: 1, overflowY: 'auto', overflowX: 'hidden' }}>
+                    {renderPage()}
                 </div>
             </div>
         </div>

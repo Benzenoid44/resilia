@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import {
     Wind, Coffee, Users, Bell, Siren,
-    Pill, MapPin, Phone, Building2,
+    Pill, MapPin, Phone, Building2, User,
     Activity, ChevronRight, TrendingUp,
 } from 'lucide-react';
 import { STRESS_CONFIG } from '../data/stressEngine';
@@ -197,6 +197,23 @@ export default function StressAnalysisPanel({ getStressAnalysis }) {
                         color="#6D4ADE"
                         onClick={() => window.open('sms:', '_self')}
                     />
+
+                    {/* Nearby Doctors */}
+                    <ActionLabel label="Nearby Doctors" />
+                    <NearbyDoctorCard
+                        name="Dr. Sanjay Mehta"
+                        specialty="General Physician"
+                        distance="0.8 km"
+                        phone="+91 98100 11223"
+                        available
+                    />
+                    <NearbyDoctorCard
+                        name="Dr. Priya Iyer"
+                        specialty="General Practitioner"
+                        distance="1.4 km"
+                        phone="+91 98200 44556"
+                        available
+                    />
                 </div>
             );
         }
@@ -234,13 +251,32 @@ export default function StressAnalysisPanel({ getStressAnalysis }) {
                     color="#2563EB"
                     onClick={() => setShowSOS(true)}
                 />
-                <ActionCard
-                    icon={<Building2 size={18} color="#12A37A" />}
-                    title="Show Nearby Hospital"
-                    subtitle="City Medical Center · 1.2 km away"
-                    color="#12A37A"
-                    onClick={() => setShowSOS(true)}
+
+                {/* Nearby Doctors */}
+                <ActionLabel label="Nearby Doctors & Hospitals" />
+                <NearbyDoctorCard
+                    name="City Medical Center"
+                    specialty="Emergency & Cardiology"
+                    distance="1.2 km"
+                    phone="+91 11 2345 6789"
+                    available
+                    isHospital
                 />
+                <NearbyDoctorCard
+                    name="Dr. Arvind Rao"
+                    specialty="Cardiologist"
+                    distance="1.8 km"
+                    phone="+91 98300 77889"
+                    available
+                />
+                <NearbyDoctorCard
+                    name="Dr. Neha Kapoor"
+                    specialty="Psychiatrist · Stress Specialist"
+                    distance="2.1 km"
+                    phone="+91 98400 22334"
+                    available={false}
+                />
+
                 <button
                     onClick={() => setShowSOS(true)}
                     style={{
@@ -331,5 +367,54 @@ function ActionLabel({ label }) {
         <p style={{ fontSize: '0.65rem', fontWeight: 700, color: '#A0ABBE', textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: '10px' }}>
             {label}
         </p>
+    );
+}
+
+/* ── Nearby Doctor Card ─────────────────────────────────────────── */
+function NearbyDoctorCard({ name, specialty, distance, phone, available, isHospital }) {
+    return (
+        <div style={{
+            display: 'flex', alignItems: 'center', gap: '10px',
+            padding: '10px 12px', borderRadius: '12px',
+            background: '#FAFBFD',
+            border: '1px solid rgba(0,0,0,0.07)',
+            borderLeft: `3px solid ${isHospital ? '#DC2626' : '#2563EB'}`,
+            marginBottom: '8px',
+        }}>
+            <div style={{
+                width: '36px', height: '36px', borderRadius: '10px', flexShrink: 0,
+                background: isHospital ? 'rgba(220,38,38,0.08)' : 'rgba(37,99,235,0.08)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+            }}>
+                {isHospital
+                    ? <Building2 size={18} color="#DC2626" />
+                    : <User size={18} color="#2563EB" />}
+            </div>
+            <div style={{ flex: 1, minWidth: 0 }}>
+                <p style={{ fontSize: '0.76rem', fontWeight: 700, color: '#1A2233', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{name}</p>
+                <p style={{ fontSize: '0.63rem', color: '#5A6880', marginTop: '1px' }}>{specialty}</p>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '2px' }}>
+                    <MapPin size={10} color="#A0ABBE" />
+                    <span style={{ fontSize: '0.6rem', color: '#A0ABBE' }}>{distance}</span>
+                    <span style={{
+                        fontSize: '0.58rem', fontWeight: 700,
+                        color: available ? '#12A37A' : '#D97706',
+                        background: available ? 'rgba(18,163,122,0.08)' : 'rgba(217,119,6,0.08)',
+                        padding: '1px 6px', borderRadius: '10px',
+                    }}>{available ? 'Available Now' : 'By Appointment'}</span>
+                </div>
+            </div>
+            <a
+                href={`tel:${phone}`}
+                style={{
+                    width: '32px', height: '32px', borderRadius: '50%', flexShrink: 0,
+                    background: '#2563EB', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    textDecoration: 'none',
+                }}
+                title={`Call ${name}`}
+            >
+                <Phone size={14} color="#fff" fill="#fff" />
+            </a>
+        </div>
     );
 }
