@@ -125,13 +125,59 @@ export default function StressAnalysisPanel({ getStressAnalysis }) {
     const [mbTime, setMbTime] = useState(300); // 5 min countdown
     const intervalRef = useRef(null);
 
-    // Refresh stress analysis every 2s
+    // ── Simulation mode ──────────────────────────────────────────
+    const SIM_SCENARIOS = [
+        null, // live data
+        {
+            score: 22,
+            level: 'low',
+            topFactors: [
+                { id: 'hrv', label: 'Low HRV', pct: 12 },
+                { id: 'hr', label: 'Elevated Heart Rate', pct: 8 },
+                { id: 'gsr', label: 'Skin Conductance', pct: 5 },
+            ],
+        },
+        {
+            score: 56,
+            level: 'moderate',
+            topFactors: [
+                { id: 'hrv', label: 'Low HRV', pct: 64 },
+                { id: 'gsr', label: 'Skin Conductance', pct: 58 },
+                { id: 'hr', label: 'Elevated Heart Rate', pct: 47 },
+            ],
+        },
+        {
+            score: 83,
+            level: 'severe',
+            topFactors: [
+                { id: 'hrv', label: 'Low HRV', pct: 92 },
+                { id: 'gsr', label: 'Skin Conductance', pct: 87 },
+                { id: 'respiratory', label: 'Rapid Breathing', pct: 76 },
+            ],
+        },
+    ];
+    const SIM_LABELS = ['LIVE', 'LOW', 'MOD', 'HIGH'];
+    const SIM_COLORS = ['#12A37A', '#12A37A', '#D97706', '#DC2626'];
+
+    const [simIdx, setSimIdx] = useState(0);
+    const cycleSimMode = () => setSimIdx(i => (i + 1) % SIM_SCENARIOS.length);
+
+    // Refresh stress analysis every 2s (only when not in sim mode)
     useEffect(() => {
         const id = setInterval(() => {
-            setAnalysis(getStressAnalysis());
+            if (simIdx === 0) setAnalysis(getStressAnalysis());
         }, 2000);
         return () => clearInterval(id);
-    }, [getStressAnalysis]);
+    }, [getStressAnalysis, simIdx]);
+
+    // Keep analysis in sync when switching sim scenarios
+    useEffect(() => {
+        if (simIdx === 0) {
+            setAnalysis(getStressAnalysis());
+        } else {
+            setAnalysis(SIM_SCENARIOS[simIdx]);
+        }
+    }, [simIdx]);
 
     // Micro-break countdown
     useEffect(() => {
@@ -318,16 +364,45 @@ export default function StressAnalysisPanel({ getStressAnalysis }) {
                             {cfg.tagline}
                         </p>
                     </div>
-                    {/* Level badge */}
-                    <div style={{
-                        display: 'flex', alignItems: 'center', gap: '5px',
-                        background: cfg.bg, border: `1px solid ${cfg.border}`,
-                        borderRadius: '20px', padding: '4px 10px',
-                    }}>
-                        <div style={{ width: '7px', height: '7px', borderRadius: '50%', background: cfg.color, animation: 'pulse-dot 1.8s infinite' }} />
-                        <span style={{ fontSize: '0.65rem', fontWeight: 800, color: cfg.color, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
-                            {cfg.label}
-                        </span>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                        {/* DEMO toggle button */}
+                        <button
+                            onClick={cycleSimMode}
+                            title="Cycle through demo scenarios"
+                            style={{
+                                display: 'flex', alignItems: 'center', gap: '4px',
+                                padding: '4px 9px',
+                                borderRadius: '20px',
+                                border: `1px solid ${simIdx === 0 ? 'rgba(0,0,0,0.12)' : SIM_COLORS[simIdx] + '50'}`,
+                                background: simIdx === 0 ? 'rgba(0,0,0,0.04)' : SIM_COLORS[simIdx] + '14',
+                                cursor: 'pointer',
+                                transition: 'all 0.22s ease',
+                            }}
+                        >
+                            {simIdx === 0
+                                ? <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#12A37A', animation: 'pulse-dot 1.5s infinite' }} />
+                                : <span style={{ fontSize: '0.65rem' }}>🎬</span>
+                            }
+                            <span style={{
+                                fontSize: '0.6rem', fontWeight: 800,
+                                color: SIM_COLORS[simIdx],
+                                letterSpacing: '0.06em',
+                                fontFamily: 'var(--font-mono)',
+                            }}>
+                                {SIM_LABELS[simIdx]}
+                            </span>
+                        </button>
+                        {/* Level badge */}
+                        <div style={{
+                            display: 'flex', alignItems: 'center', gap: '5px',
+                            background: cfg.bg, border: `1px solid ${cfg.border}`,
+                            borderRadius: '20px', padding: '4px 10px',
+                        }}>
+                            <div style={{ width: '7px', height: '7px', borderRadius: '50%', background: cfg.color, animation: 'pulse-dot 1.8s infinite' }} />
+                            <span style={{ fontSize: '0.65rem', fontWeight: 800, color: cfg.color, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                                {cfg.label}
+                            </span>
+                        </div>
                     </div>
                 </div>
 
