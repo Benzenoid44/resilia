@@ -1,0 +1,285 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* Light medical palette */
+  --bg-primary: #F4F7FB;
+  --bg-card: #FFFFFF;
+  --bg-card-hover: #F0F5FD;
+  --bg-modal: #FFFFFF;
+  --border: rgba(0, 0, 0, 0.07);
+  --border-glow: rgba(0, 90, 200, 0.15);
+
+  /* Text */
+  --text-primary: #1A2233;
+  --text-secondary: #5A6880;
+  --text-muted: #A0ABBE;
+
+  /* Clinical status colours – calm versions of red/amber/green */
+  --green: #12A37A;
+  /* teal-green: normal */
+  --yellow: #D97706;
+  /* muted amber: caution */
+  --red: #DC2626;
+  /* clear red: critical */
+  --blue: #2563EB;
+  /* medical blue: primary accent */
+  --blue-light: #EEF4FF;
+  --purple: #6D4ADE;
+
+  /* Typography */
+  --font-main: 'Outfit', 'Inter', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+
+  /* Shape */
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  --radius-xl: 28px;
+
+  /* Shadows – much softer */
+  --shadow-card: 0 2px 12px rgba(0, 0, 0, 0.06);
+  --shadow-card-hover: 0 4px 20px rgba(0, 0, 0, 0.10);
+  --shadow-modal: 0 -4px 40px rgba(0, 0, 0, 0.12);
+
+  --transition: 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+}
+
+body {
+  font-family: var(--font-main);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.12);
+  border-radius: 2px;
+}
+
+/* ── Animations ───────────────────────────────────── */
+@keyframes pulse-dot {
+
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 0.5;
+    transform: scale(0.82);
+  }
+}
+
+@keyframes pulse-ring {
+  0% {
+    transform: scale(0.92);
+    opacity: 0.7;
+  }
+
+  70% {
+    transform: scale(1.18);
+    opacity: 0;
+  }
+
+  100% {
+    transform: scale(0.92);
+    opacity: 0;
+  }
+}
+
+@keyframes slide-up {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes glow-pulse {
+
+  0%,
+  100% {
+    box-shadow: 0 0 6px currentColor;
+  }
+
+  50% {
+    box-shadow: 0 0 14px currentColor;
+  }
+}
+
+@keyframes ecg-draw {
+  from {
+    stroke-dashoffset: 800;
+  }
+
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes float {
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes number-tick {
+  from {
+    transform: translateY(-6px);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* ── Utility ─────────────────────────────────────── */
+.font-mono {
+  font-family: var(--font-mono);
+}
+
+.truncate {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.flex {
+  display: flex;
+}
+
+.flex-col {
+  flex-direction: column;
+}
+
+.items-center {
+  align-items: center;
+}
+
+.justify-between {
+  justify-content: space-between;
+}
+
+.gap-1 {
+  gap: 4px;
+}
+
+.gap-2 {
+  gap: 8px;
+}
+
+.gap-3 {
+  gap: 12px;
+}
+
+.w-full {
+  width: 100%;
+}
+
+.h-full {
+  height: 100%;
+}
+
+.relative {
+  position: relative;
+}
+
+.absolute {
+  position: absolute;
+}
+
+.text-sm {
+  font-size: 0.78rem;
+}
+
+.text-xs {
+  font-size: 0.68rem;
+}
+
+/* Glass card – light */
+.glass-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-card);
+  transition: all var(--transition);
+}
+
+.glass-card:hover {
+  border-color: var(--border-glow);
+  background: var(--bg-card-hover);
+  box-shadow: var(--shadow-card-hover);
+}
+
+/* Gradient text */
+.gradient-text {
+  background: linear-gradient(135deg, #1A2233 0%, #5A6880 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}

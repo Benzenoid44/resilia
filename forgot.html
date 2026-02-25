@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SAVR Health — Forgot Password</title>
+    <link rel="stylesheet" href="style.css" />
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>❤️</text></svg>" />
+    <style>
+        .subtitle {
+            font-size: .93rem;
+            color: var(--text-muted);
+            margin-top: .25rem;
+            margin-bottom: 1.8rem;
+            line-height: 1.5;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: .3rem;
+            font-size: .86rem;
+            font-weight: 500;
+            color: var(--text-muted);
+            margin-bottom: 1.4rem;
+            transition: color var(--transition);
+        }
+
+        .back-link:hover {
+            color: var(--primary);
+        }
+    </style>
+</head>
+
+<body>
+
+    <main class="page-center" role="main">
+        <div class="card">
+
+            <!-- Brand -->
+            <div class="brand">
+                <div class="brand-icon" aria-hidden="true">❤️</div>
+                <span class="brand-name">SA<span>VR</span></span>
+            </div>
+
+            <a href="login.html" class="back-link">← Back to sign in</a>
+
+            <h1 style="font-size:1.5rem;font-weight:700;color:var(--text)">Reset your password</h1>
+            <p class="subtitle">Enter your email and we'll send you a reset link. Check your inbox in a few minutes.</p>
+
+            <!-- Success state (hidden by default) -->
+            <div id="success-msg" class="alert alert-success" role="alert" style="display:none;">
+                <span>✅</span>
+                <span>Reset link sent! Check your inbox and spam folder.</span>
+            </div>
+
+            <form id="forgot-form" novalidate>
+                <div class="form-group">
+                    <label for="email">Email address</label>
+                    <div class="input-wrap">
+                        <input type="email" id="email" name="email" placeholder="you@example.com" autocomplete="email"
+                            inputmode="email" required />
+                        <span class="input-icon" aria-hidden="true">✉️</span>
+                    </div>
+                    <span class="field-error" id="email-error" role="alert">⚠ Please enter a valid email</span>
+                </div>
+
+                <button type="submit" id="reset-btn" class="btn btn-primary">
+                    <div class="spinner" aria-hidden="true"></div>
+                    <span class="btn-text">Send reset link</span>
+                </button>
+            </form>
+
+            <p class="footer-text" style="margin-top:1.2rem;">
+                Remember your password? <a href="login.html">Sign in</a>
+            </p>
+
+        </div>
+    </main>
+
+    <script src="script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const form = document.getElementById('forgot-form');
+            if (!form) return;
+            const emailInput = document.getElementById('email');
+            emailInput.addEventListener('input', () => clearError('email'));
+
+            form.addEventListener('submit', async e => {
+                e.preventDefault();
+                const email = emailInput.value.trim();
+                if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+                    setError('email', '⚠ Please enter a valid email'); return;
+                }
+                const btn = document.getElementById('reset-btn');
+                btn.classList.add('loading'); btn.disabled = true;
+                await new Promise(r => setTimeout(r, 1500));
+                btn.classList.remove('loading'); btn.disabled = false;
+                form.style.display = 'none';
+                document.getElementById('success-msg').style.display = 'flex';
+            });
+        });
+    </script>
+</body>
+
+</html>

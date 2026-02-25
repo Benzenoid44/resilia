@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SAVR Health — Sign In</title>
+  <meta name="description" content="Sign in to SAVR, your personal health monitoring companion." />
+  <link rel="stylesheet" href="style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>❤️</text></svg>" />
+  <style>
+    /* Page-specific extras */
+    .subtitle      { font-size: .95rem; color: var(--text-muted); margin-top: .25rem; margin-bottom: 1.8rem; }
+    .page-title    { font-size: 1.6rem; font-weight: 700; color: var(--text); }
+  </style>
+</head>
+<body>
+
+<main class="page-center" role="main">
+  <div class="card" aria-label="Sign in form">
+
+    <!-- Brand -->
+    <div class="brand">
+      <div class="brand-icon" aria-hidden="true">❤️</div>
+      <span class="brand-name">SA<span>VR</span></span>
+    </div>
+
+    <!-- Heading -->
+    <h1 class="page-title">Welcome back</h1>
+    <p class="subtitle">Sign in to your health dashboard</p>
+
+    <!-- Alert banner -->
+    <div id="alert" class="alert alert-error" role="alert" aria-live="polite">
+      <span>⚠️</span>
+      <span id="alert-text">Invalid email or password.</span>
+    </div>
+
+    <!-- Form -->
+    <form id="login-form" novalidate autocomplete="on">
+
+      <!-- Email -->
+      <div class="form-group">
+        <label for="email">Email address</label>
+        <div class="input-wrap">
+          <input
+            type="email"
+            id="email"
+            name="email"
+            placeholder="you@example.com"
+            autocomplete="email"
+            inputmode="email"
+            aria-describedby="email-error"
+            required
+          />
+          <span class="input-icon" aria-hidden="true">✉️</span>
+        </div>
+        <span class="field-error" id="email-error" role="alert">⚠ Please enter a valid email</span>
+      </div>
+
+      <!-- Password -->
+      <div class="form-group">
+        <div class="helper-row">
+          <label for="password">Password</label>
+          <a href="forgot.html" class="link-sm" id="forgot-link">Forgot password?</a>
+        </div>
+        <div class="input-wrap">
+          <input
+            type="password"
+            id="password"
+            name="password"
+            placeholder="••••••••"
+            autocomplete="current-password"
+            aria-describedby="password-error"
+            required
+          />
+          <span class="input-icon" aria-hidden="true">🔒</span>
+          <button type="button" class="toggle-pw" id="toggle-pw" aria-label="Show password">👁</button>
+        </div>
+        <span class="field-error" id="password-error" role="alert">⚠ Password must be at least 8 characters</span>
+      </div>
+
+      <!-- Remember me -->
+      <div class="form-group">
+        <label class="check-row">
+          <input type="checkbox" id="remember" name="remember" />
+          Keep me signed in
+        </label>
+      </div>
+
+      <!-- Submit -->
+      <button type="submit" id="login-btn" class="btn btn-primary">
+        <div class="spinner" aria-hidden="true"></div>
+        <span class="btn-text">Sign in</span>
+      </button>
+
+    </form>
+
+    <!-- Sign up link -->
+    <p class="footer-text">
+      Don't have an account?
+      <a href="signup.html">Create one free</a>
+    </p>
+
+  </div>
+</main>
+
+<script src="script.js"></script>
+</body>
+</html>

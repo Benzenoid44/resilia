@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SAVR Health — Create Account</title>
+    <link rel="stylesheet" href="style.css" />
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>❤️</text></svg>" />
+    <style>
+        .subtitle {
+            font-size: .93rem;
+            color: var(--text-muted);
+            margin-top: .25rem;
+            margin-bottom: 1.6rem;
+        }
+    </style>
+</head>
+
+<body>
+
+    <main class="page-center" role="main">
+        <div class="card" style="max-width:440px">
+
+            <!-- Brand -->
+            <div class="brand">
+                <div class="brand-icon" aria-hidden="true">❤️</div>
+                <span class="brand-name">SA<span>VR</span></span>
+            </div>
+
+            <h1 style="font-size:1.5rem;font-weight:700;color:var(--text)">Create your account</h1>
+            <p class="subtitle">Start monitoring your health today — it's free.</p>
+
+            <div id="alert-signup" class="alert alert-error" role="alert"></div>
+
+            <form id="signup-form" novalidate autocomplete="on">
+
+                <div class="form-group">
+                    <label for="name">Full name</label>
+                    <div class="input-wrap">
+                        <input type="text" id="name" name="name" placeholder="Your name" autocomplete="name" required />
+                        <span class="input-icon" aria-hidden="true">👤</span>
+                    </div>
+                    <span class="field-error" id="name-error" role="alert"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email address</label>
+                    <div class="input-wrap">
+                        <input type="email" id="email" name="email" placeholder="you@example.com" autocomplete="email"
+                            inputmode="email" required />
+                        <span class="input-icon" aria-hidden="true">✉️</span>
+                    </div>
+                    <span class="field-error" id="email-error" role="alert"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <div class="input-wrap">
+                        <input type="password" id="password" name="password" placeholder="Min 8 characters"
+                            autocomplete="new-password" required />
+                        <span class="input-icon" aria-hidden="true">🔒</span>
+                        <button type="button" class="toggle-pw" id="toggle-pw" aria-label="Show password">👁</button>
+                    </div>
+                    <span class="field-error" id="password-error" role="alert"></span>
+                </div>
+
+                <div class="form-group" style="margin-bottom:.5rem">
+                    <label class="check-row">
+                        <input type="checkbox" id="terms" name="terms" required />
+                        I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>
+                    </label>
+                    <span class="field-error" id="terms-error" role="alert"></span>
+                </div>
+
+                <button type="submit" id="signup-btn" class="btn btn-primary">
+                    <div class="spinner" aria-hidden="true"></div>
+                    <span class="btn-text">Create account</span>
+                </button>
+
+            </form>
+
+            <p class="footer-text" style="margin-top:1.2rem;">
+                Already have an account? <a href="login.html">Sign in</a>
+            </p>
+
+        </div>
+    </main>
+
+    <script src="script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const form = document.getElementById('signup-form');
+            if (!form) return;
+
+            initPasswordToggle('password', 'toggle-pw');
+            ['name', 'email', 'password'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.addEventListener('input', () => clearError(id));
+            });
+
+            form.addEventListener('submit', async e => {
+                e.preventDefault();
+                let valid = true;
+                const name = document.getElementById('name').value.trim();
+                const email = document.getElementById('email').value.trim();
+                const pwd = document.getElementById('password').value;
+                const terms = document.getElementById('terms').checked;
+
+                if (!name) { setError('name', '⚠ Please enter your name'); valid = false; }
+                if (!email || !isEmail(email)) { setError('email', '⚠ Enter a valid email'); valid = false; }
+                if (!pwd || !isStrong(pwd)) { setError('password', '⚠ Minimum 8 characters'); valid = false; }
+                if (!terms) { setError('terms', '⚠ Please accept the terms to continue'); valid = false; }
+
+                if (!valid) return;
+
+                const btn = document.getElementById('signup-btn');
+                btn.classList.add('loading'); btn.disabled = true;
+                await new Promise(r => setTimeout(r, 1500));
+
+                Session.save(email);
+                window.location.href = 'index.html';
+            });
+        });
+    </script>
+</body>
+
+</html>
