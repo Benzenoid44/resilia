@@ -1,17 +1,20 @@
 /**
  * SAVR Blockchain Security Layer
- * ─────────────────────────────────────────────────────────────
- * Simulates an on-device blockchain ledger for medical data.
- * Every profile save & prescription upload is SHA-256 hashed
- * and appended to an immutable chain stored in localStorage.
+ * ─────────────────────────────────────────────────────────────────
+ * Each profile save / prescription upload is SHA-256 hashed and
+ * written to Firebase Realtime Database so ALL patients' records
+ * aggregate on the admin dashboard — across any browser or device.
  *
- * Storage key : "savr_blockchain_ledger"
- * Each block   : { index, timestamp, type, dataHash, prevHash, blockHash }
+ * Local localStorage is kept as a fast offline cache.
+ * Firebase is the source of truth for the admin view.
  */
+
+import { ref, push } from 'firebase/database';
+import { db } from './firebaseConfig';
 
 const LEDGER_KEY = 'savr_blockchain_ledger';
 
-/** SHA-256 using Web Crypto API → returns hex string */
+/** SHA-256 via Web Crypto API → hex string */
 async function sha256(text) {
     const encoder = new TextEncoder();
     const data = encoder.encode(text);
@@ -20,8 +23,8 @@ async function sha256(text) {
     return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
 }
 
-/** Load the existing ledger from localStorage */
-export function loadLedger() {
+/** Load this patient's local chain (for prevHash chaining) */
+function loadLocalLedger() {
     try {
         const raw = localStorage.getItem(LEDGER_KEY);
         return raw ? JSON.parse(raw) : [];
@@ -30,44 +33,49 @@ export function loadLedger() {
     }
 }
 
-/** Persist ledger to localStorage */
-function saveLedger(ledger) {
+function saveLocalLedger(ledger) {
     localStorage.setItem(LEDGER_KEY, JSON.stringify(ledger));
 }
 
 /**
- * Append a new block to the chain.
+ * Hash & append a new block.
+ * → Writes to Firebase (visible to admin across ALL devices/users)
+ * → Also caches locally in localStorage
+ *
  * @param {'PROFILE_SAVE' | 'PRESCRIPTION_ADD'} type
- * @param {object} payload  - the raw data object to hash
- * @returns {object} the new block
+ * @param {object} payload
  */
 export async function appendBlock(type, payload) {
-    const ledger = loadLedger();
-    const prevBlock = ledger[ledger.length - 1];
+    const localLedger = loadLocalLedger();
+    const prevBlock = localLedger[localLedger.length - 1];
     const prevHash = prevBlock ? prevBlock.blockHash : '0'.repeat(64);
 
     const timestamp = new Date().toISOString();
     const dataHash = await sha256(JSON.stringify(payload));
-
-    // Block hash = SHA-256 of (index + timestamp + type + dataHash + prevHash)
-    const index = ledger.length;
+    const index = localLedger.length;
     const blockHash = await sha256(`${index}${timestamp}${type}${dataHash}${prevHash}`);
 
-    const block = {
-        index,
-        timestamp,
-        type,
-        dataHash,
-        prevHash,
-        blockHash,
-    };
+    const block = { index, timestamp, type, dataHash, prevHash, blockHash };
 
-    ledger.push(block);
-    saveLedger(ledger);
+    // ── Write to Firebase (shared across all users) ──────────────
+    try {
+        await push(ref(db, 'blockchain/blocks'), block);
+    } catch (err) {
+        console.warn('[SAVR] Firebase write failed, falling back to localStorage only:', err);
+    }
+
+    // ── Cache locally ─────────────────────────────────────────────
+    localLedger.push(block);
+    saveLocalLedger(localLedger);
+
     return block;
 }
 
-/** Clear the ledger (for testing only) */
+/** Still exported for compatibility — reads only local cache */
+export function loadLedger() {
+    return loadLocalLedger();
+}
+
 export function clearLedger() {
     localStorage.removeItem(LEDGER_KEY);
 }
